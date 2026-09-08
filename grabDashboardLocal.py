@@ -1,6 +1,8 @@
 import http.server
 import threading
 
+from functools import cache
+
 from datetime import datetime,timedelta
 import requests
 from jinja2 import Environment, FileSystemLoader
@@ -11,9 +13,11 @@ def setup_jinja2():
         loader=FileSystemLoader("HTML"),
     )
     def states(entity_id):
+        obj_states=get_ha_states()
         return obj_states.get(entity_id,{}).get('state')
 
     def state_attr(entity_id,attr):
+        obj_states=get_ha_states()
         return obj_states.get(entity_id,{}).get('attributes',{}).get(attr)
 
     env.globals["now"] = datetime.now
@@ -32,8 +36,7 @@ KINDLE_HOST = "root@192.168.15.244"
 KINDLE_IMG_PATH = "/mnt/us/dashboard.png"
 KINDLE_SCRIPT = "/mnt/us/show_dashboard.sh"
 
-obj_states = {}
-
+@cache
 def get_ha_states():
     response = requests.get(
         f"{HA_URL}/api/states",
@@ -91,7 +94,6 @@ def start_static_server(port:int=0, threaded:bool=True):
     return server
 
 def render_dashboard():
-    global obj_states
     server = start_static_server()
 
     try:
@@ -105,8 +107,6 @@ def render_dashboard():
                 },
                 device_scale_factor=1,
             )
-
-            obj_states = get_ha_states()
 
             page.goto(
                 f"http://127.0.0.1:{server.server_port}/",
