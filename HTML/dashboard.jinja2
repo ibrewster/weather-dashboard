@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:wght@700&display=swap" rel="stylesheet">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <style>
+        @font-face {
+            font-family:'Cascadia Mono';
+            src: url('fonts/CascadiaMono-VariableFont_wght.ttf') format('truetype');
+            font-weight: 200 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
         @font-face {
             font-family: 'weathericons';
             src: url('fonts/weathericons-regular-webfont.woff2') format('woff2'),
@@ -34,6 +39,7 @@
             box-sizing: border-box;
         }
 
+        /*
         @font-face {
             font-family: 'weathericons';
             src: url('https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'),
@@ -43,7 +49,7 @@
             url('https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');
             font-weight: normal;
             font-style: normal;
-        }
+        }*/
 
         .wi:before {
             font-family: 'Weather Icons', weathericons;
