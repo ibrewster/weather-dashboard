@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:wght@700&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <style>
+        @font-face {
+            font-family: 'weathericons';
+            src: url('fonts/weathericons-regular-webfont.woff2') format('woff2'),
+            url('fonts/weathericons-regular-webfont.woff') format('woff'),
+            url('fonts/weathericons-regular-webfont.ttf') format('truetype'),
+            url('fonts/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        .dash {
+            all: initial;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            width: 600px;
+            height: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            color: #0d1117;
+            font-family: 'Cascadia Mono', sans-serif;
+            text-rendering: geometricPrecision;
+            display: grid;
+            grid-template-rows: auto auto min-content auto 1fr;
+            align-content: start;
+            padding: 0px 5px;
+            box-sizing: border-box;
+        }
+
+        @font-face {
+            font-family: 'weathericons';
+            src: url('https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'),
+            url('https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/font/weathericons-regular-webfont.woff2') format('woff2'),
+            url('https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/font/weathericons-regular-webfont.woff') format('woff'),
+            url('https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/font/weathericons-regular-webfont.ttf') format('truetype'),
+            url('https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        .wi:before {
+            font-family: 'Weather Icons', weathericons;
+            font-style: normal;
+            font-weight: normal;
+            speak: never;
+            display: inline-block;
+            text-decoration: inherit;
+            text-align: center;
+        }
+
+        .wi-clear-night:before {
+            content: "\f02e";
+        }
+
+        {% if states('sun.sun')=='above_horizon' %}
+            /* DAYTIME ICONS */
+            .wi-sunny:before {
+                content: "\f00d";
+            }
+            .wi-partlycloudy:before {
+                content: "\f002";
+            }
+
+        {% else %}
+
+            /* NIGHTTIME ICONS */
+            .wi-clear-night,
+            .wi-sunny:before {
+                content: "\f02e";
+            }
+
+            .wi-partlycloudy:before {
+                content: "\f086";
+            }
+
+        {% endif %}
+
+        .wi-day-sunny:before {
+            content: "\f00d";
+        }
+
+        .wi-day-partlycloudy:before {
+            content: "\f002";
+        }
+
+        .wi-cloudy:before {
+            content: "\f013";
+        }
+
+        .wi-rainy:before {
+            content: "\f019";
+        }
+
+        .wi-snowy-rainy:before {
+            content: "\f017";
+        }
+
+        .wi-snowy:before {
+            content: "\f01b";
+        }
+
+        .wi-fog:before {
+            content: "\f014";
+        }
+
+        .wi-windy:before {
+            content: "\f021";
+        }
+
+        .wi-lightning-rainy:before {
+            content: "\f01d";
+        }
+
+        .wi-lightning:before {
+            content: "\f01e";
+        }
+
+        .wi-hail:before {
+            content: "\f015";
+        }
+
+        .wi-pouring:before {
+            content: "\f019";
+        }
+
+        .wi-windy-variant:before {
+            content: "\f011";
+        }
+
+        .wi-na:before {
+            content: "\f07b";
+        }
+
+        .wind-widget {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: -apple-system,
+            BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            color: black;
+        }
+
+        .wind-direction {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 2px solid black;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-self: center;
+            justify-self: center;
+        }
+
+        .wind-left {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            align-self: stretch;
+        }
+
+        .wind-arrow {
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 28px solid black;
+            position: relative;
+
+            transform: rotate({{states('sensor.tempest_wind_direction_average')}}deg);
+        }
+
+        .wind-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            align-self: flex-end;
+        }
+
+        .wind-speed {
+            font-size: 70px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .wind-gust {
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #333;
+        }
+
+        .room-grid,
+        .room-box,
+        .out-details {
+            align-items: start;
+        }
+
+        .datetime {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .date {
+            font-size: 50px;
+            margin: 6px 0 0;
+            color: #444;
+            white-space: nowrap;
+            word-spacing: -0.3em;
+            letter-spacing: -0.05em;
+        }
+
+        .time {
+            font-size: 70px;
+            margin: 0;
+            line-height: 1;
+            font-weight: 900;
+            white-space: nowrap;
+            word-spacing: -0.3em;
+            letter-spacing: -0.05em;
+        }
+
+        .temp {
+            font-size: 180px;
+            margin: 0;
+            line-height: 1;
+            font-weight: 900;
+            display: grid;
+            grid-template-columns: auto auto;
+        }
+
+        .icon {
+            font-size: 10px;
+            color: #ffd60a;
+        }
+
+        .out-details {
+            font-size: 35px;
+            line-height: 1;
+            margin: 5px 0;
+            color: #333;
+            display: grid;
+            grid-template-columns:
+            auto auto auto;
+            gap: 10px;
+        }
+
+        .divider {
+            width: 100%;
+            height: 3px;
+            line-height: 1;
+            background: #ddd;
+            margin: 5px 0;
+            border: 3px inset #ddd;
+        }
+
+        .room-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+            border-top: 3px solid #777;
+            padding-top: 5px;
+        }
+
+        .room-box {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 10px 15px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            justify-items: center;
+        }
+
+        iconify-icon.room-icon{
+            transform: scale(.75);
+            margin-right: 10px;
+            display: inline-block;
+            color: #0d1117;
+            margin-bottom: -9px;
+        }
+
+        ha-icon.room-icon {
+            transform: scale(2);
+            margin-right: 10px;
+            display: inline-block;
+            color: #0d1117;
+            margin-bottom: -12px;
+            padding-bottom: 12px;
+        }
+
+        .room-title {
+            font-size: 18px;
+            line-height: 1;
+            color: #666;
+            font-weight: bold;
+            grid-column: span 2;
+            justify-self: start;
+            margin: 0px;
+        }
+
+        .room-data {
+            line-height: 1;
+            font-size: 50px;
+            font-weight: 600;
+            margin: 3px 0;
+            color: #0d1117;
+            word-spacing: -1em;
+        }
+
+        .sensorDetail {
+            background: #f8f9fa;
+            padding: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+        }
+
+        .sensorTitle {
+            font-size: 25px;
+            color: #666;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .sensorValue {
+            line-height: 1;
+            font-size: 70px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .temp-details {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .current-weather {
+            font-size: 90px;
+        }
+
+        .temp-limits {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 70px;
+            font-weight: 600;
+        }
+
+        .temp-divider {
+            width: 80%;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+        }
+
+        .degree,
+        .decimal {
+            font-size: 40px;
+            font-weight: normal;
+            vertical-align: top;
+            padding-top: 20px;
+            display: inline-block;
+        }
+
+        .decimal {
+            padding-bottom: 28px;
+            font-weight: bold;
+        }
+
+        .degree.small {
+            font-size: 25px;
+            padding-top: 10px;
+        }
+
+        .temp-extra {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-between;
+            vertical-align: top;
+        }
+
+        .forecast {
+            display: flex;
+            border-top: 3px solid #777;
+        }
+
+        .forecast > div {
+            flex: 1;
+        }
+
+        .forecast .wi {
+            font-size: 50px;
+        }
+    </style>
+    <title>Local Weather</title>
+</head>
+<body>
+
+{% set valid_conditions = [
+  'sunny',
+  'clear-night',
+  'partlycloudy',
+  'cloudy',
+  'rainy',
+  'pouring',
+  'snowy',
+  'fog',
+  'windy',
+  'windy-variant',
+  'lightning',
+  'lightning-rainy',
+  'hail',
+  'snowy-rainy'
+] %}
+
+<div class="dash">
+    <div class="datetime">
+        <div class="date">{{ now().strftime('%a, %b %d') }}</div>
+        <div class="time">{{ now().strftime('%-I:%M %p') }}</div>
+    </div>
+    <div style="text-align:center; width:100%;">
+        <div class="temp-details">
+            <div class="current-weather">
+                {% set condition = states('weather.821_23rd') %}
+
+                {% if condition in valid_conditions %}
+                    {% set icon_class = 'wi-' ~ condition %}
+                {% else %}
+                    {% set icon_class = 'wi-na' %}
+                {% endif %}
+
+                {# Output the icon as a span element in your HTML #}
+                <i class="wi {{ icon_class }}"></i>
+            </div>
+            <div class="temp">{{ ((states('sensor.tempest_temperature') | float(0))) | round(0) | int }}
+                <div class="temp-extra">
+                    <div class="degree">°F</div>
+                    <div class="decimal">
+                        .{{ "{:.1f}".format(states('sensor.tempest_temperature') | float(0))[-1] }}</div>
+                </div>
+            </div>
+            <div class="temp-limits">
+                <div class="high-temp">{{ state_attr('sensor.weather_forecast_daily',
+                    'forecast')[0].temperature }}<span class="degree small">°F</span></div>
+                <div class="temp-divider"></div>
+                <div class="low-temp">{{ state_attr('sensor.weather_forecast_daily',
+                    'forecast')[0].templow }}<span class="degree small">°F</span></div>
+            </div>
+        </div>
+        <div class="out-details">
+            <div class="sensorDetail">
+                <div class="sensorTitle">Feels Like</div>
+                <div class="sensorValue">{{ ((states('sensor.tempest_feels_like') | float(0))) | round(0) | int }}°</div>
+            </div>
+            <div class="sensorDetail">
+                <div class="sensorTitle">Humidity</div>
+                <div class="sensorValue">{{ states('sensor.tempest_humidity') | float(0) | round(0) | int }}%</div>
+            </div>
+            <div class="sensorDetail">
+                <div class="sensorValue">
+                    <div class="wind-widget">
+                        <div class="wind-left">
+                            <div class="sensorTitle">Wind</div>
+                            <div class="wind-direction">
+                                <div class="wind-arrow"></div>
+                            </div>
+                        </div>
+                        <div class="wind-info">
+                            <div class="wind-speed">{{ states('sensor.tempest_wind_speed_average') |
+                                float(0)|round(0)|int }} <span style="font-size: 16px;">mph</span>
+                            </div>
+                            <div class="wind-gust">
+                                G {{ states('sensor.tempest_wind_gust') | float(0)|round(0)|int }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="forecast">
+        {% for day in state_attr('sensor.weather_forecast_daily', 'forecast')[:6] %}
+            <div class="sensorDetail" style="margin: 5px; display: inline-block;
+          width: 60px;">
+                <div class="sensorTitle" style="font-size: 20px; text-align: center;">
+                    {% set day_name = loop.index0 %}
+                    {% set day_date = now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=day_name) %} {{ day_date.strftime('%a') }}
+                </div>
+                <div class="sensorValue" style="font-size: 70px; text-align: center;">
+                    {% if day.condition in valid_conditions %}
+                        {% set icon_class = 'wi-' ~ day.condition %}
+                    {% else %}
+                        {% set icon_class = 'wi-na' %}
+                    {% endif %}
+
+                    <i class="wi {{ icon_class }}"></i>
+                    <div style="font-size: 40px; margin-top: 5px;"> {{ day.temperature }}°<br>{{ day.templow }}°</div>
+                </div>
+            </div> {% endfor %}
+    </div>
+    <div class="room-grid">
+        <div class="room-box">
+            <div class="room-title">MASTER BEDROOM</div>
+            <div class="room-data">
+                <iconify-icon class="room-icon" icon="mdi:thermometer"></iconify-icon>
+                {{states('sensor.master_bedroom_thermostat_air_temperature') | float(0) | round(0) | int }}°
+            </div>
+            <div class="room-data">
+                <iconify-icon class="room-icon" icon="mdi:water-percent"></iconify-icon>
+                {{ states('sensor.master_bedroom_thermostat_humidity') | float(0) | round(0) | int }}%
+            </div>
+        </div>
+        <div class="room-box">
+            <div class="room-title">MASTER BATHROOM</div>
+            <div class="room-data">
+                <iconify-icon class="room-icon" icon="mdi:thermometer"></iconify-icon>
+                {{ states('sensor.bathroom_thermostat_air_temperature') | float(0) | round(0)| int }}°
+            </div>
+            <div class="room-data">
+                <iconify-icon class="room-icon" icon="mdi:water-percent"></iconify-icon>
+                {{ states('sensor.bathroom_thermostat_humidity')| float(0) |round(0) | int }}%
+            </div>
+        </div>
+        <div class="room-box">
+            <div class="room-title">LIVING ROOM</div>
+            <div class="room-data">
+                <iconify-icon class="room-icon" icon="mdi:thermometer"></iconify-icon>
+                {{ states('sensor.lr_thermostat_air_temperature') | float(0) | round(0) | int }}°
+            </div>
+            <div class="room-data">
+                <iconify-icon class="room-icon" icon="mdi:water-percent"></iconify-icon>
+                {{ states('sensor.lr_thermostat_humidity') | float(0) | round(0) | int }}%
+            </div>
+        </div>
+        <div class="room-box">
+            <div class="room-title">OFFICE</div>
+            <div class="room-data">
+                <iconify-icon class="room-icon" icon="mdi:thermometer"></iconify-icon>
+                {{ states('sensor.office_thermostat_air_temperature') | float(0) | round(0) | int }}°
+            </div>
+            <div class="room-data">
+                <iconify-icon class="room-icon" icon="mdi:water-percent"></iconify-icon>
+                {{ states('sensor.office_thermostat_humidity') | float(0) | round(0) | int }}%
+            </div>
+        </div>
+    </div>
+</div>
+</body>
