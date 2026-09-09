@@ -119,7 +119,8 @@ def render_dashboard():
             )
 
             browser.close()
-
+    except Exception as e:
+        print(f"An error occurred: {e}")
     finally:
         if server:
             server.shutdown()
