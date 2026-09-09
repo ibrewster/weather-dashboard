@@ -62,7 +62,8 @@ def dashboard()->str:
 
 class DashboardHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory='HTML', **kwargs)
+        root_path = Path(__file__).parent / "HTML"
+        super().__init__(*args, directory=root_path, **kwargs)
 
     def do_GET(self):
         if self.path == "/":
