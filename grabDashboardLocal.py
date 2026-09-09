@@ -3,6 +3,7 @@ import subprocess
 import threading
 
 from functools import cache
+from pathlib import Path
 
 from datetime import datetime,timedelta
 import requests
@@ -10,8 +11,9 @@ from jinja2 import Environment, FileSystemLoader
 from playwright.sync_api import sync_playwright
 
 def setup_jinja2():
+    template_path = Path(__file__).parent / "HTML"
     env = Environment(
-        loader=FileSystemLoader("HTML"),
+        loader=FileSystemLoader(template_path),
     )
     def states(entity_id):
         obj_states=get_ha_states()
