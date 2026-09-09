@@ -1,4 +1,5 @@
 import http.server
+import subprocess
 import threading
 
 from functools import cache
@@ -29,7 +30,7 @@ def setup_jinja2():
 HA_URL = "http://conductor.brewstersoft.net"
 HA_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI1MTU5Zjk0YTA2YTU0NmJjYmIyNGM5NGE4MjExODY1MyIsImlhdCI6MTc2MTY4NzcxNSwiZXhwIjoyMDc3MDQ3NzE1fQ.LavjahxRcnTuvnbYeRjQkDPNdY0QnT2GaRS_xWytI2k"
 KINDLE_WIDTH = 600
-KINDLE_HEIGHT = 800
+KINDLE_HEIGHT = 939
 
 IMG_PATH = "/tmp/dashboard.png"
 KINDLE_HOST = "root@192.168.15.244"
@@ -52,9 +53,8 @@ def get_ha_states():
         for state in response.json()
     }
 
-env = setup_jinja2()
-
 def dashboard()->str:
+    env = setup_jinja2()
     template = env.get_template('dashboard.jinja2')
     return template.render()
 
@@ -127,3 +127,10 @@ def render_dashboard():
 
 if __name__ == "__main__":
     render_dashboard()
+    # === PUSH TO KINDLE ===
+    subprocess.run(["/usr/bin/convert", "/tmp/dashboard.png", "-colorspace", "Gray", "/tmp/dashboard-gray.png"])
+    subprocess.run(["scp", "/tmp/dashboard-gray.png", f"kindle:{KINDLE_IMG_PATH}"])
+    #subprocess.run(["ssh", "kindle", "eips -c"])
+    subprocess.run(["ssh", "kindle", f"eips -g {KINDLE_IMG_PATH}"])
+
+print("Dashboard updated and pushed to Kindle.")
