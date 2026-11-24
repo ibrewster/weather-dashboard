@@ -11,6 +11,14 @@
         }
 
         @font-face {
+            font-family: 'Rubik';
+            src: url('fonts/Rubik-VariableFont_wght.ttf') format('truetype');
+            font-weight: 200 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
             font-family: 'weathericons';
             src: url('fonts/weathericons-regular-webfont.woff2') format('woff2'),
             url('fonts/weathericons-regular-webfont.woff') format('woff'),
@@ -31,6 +39,7 @@
             background: #ffffff;
             color: #0d1117;
             font-family: 'Cascadia Mono', sans-serif;
+            font-variant-numeric: tabular-nums;
             text-rendering: geometricPrecision;
             display: grid;
             grid-template-rows: auto auto min-content auto 1fr;
@@ -38,18 +47,6 @@
             padding: 0px 5px;
             box-sizing: border-box;
         }
-
-        /*
-        @font-face {
-            font-family: 'weathericons';
-            src: url('https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'),
-            url('https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/font/weathericons-regular-webfont.woff2') format('woff2'),
-            url('https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/font/weathericons-regular-webfont.woff') format('woff'),
-            url('https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/font/weathericons-regular-webfont.ttf') format('truetype'),
-            url('https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');
-            font-weight: normal;
-            font-style: normal;
-        }*/
 
         .wi:before {
             font-family: 'Weather Icons', weathericons;
@@ -241,14 +238,22 @@
             font-size: 180px;
             margin: 0;
             line-height: 1;
-            font-weight: 900;
+            font-weight: 600;
             display: grid;
             grid-template-columns: auto auto;
+            font-family: 'Rubik', sans-serif;
+            font-variant-numeric: tabular-nums;
         }
 
         .icon {
             font-size: 10px;
             color: #ffd60a;
+        }
+        .forecastTemp{
+            display: flex;
+            flex-direction: column;
+            align-items: end;
+            text-align: right;
         }
 
         .out-details {
@@ -344,8 +349,10 @@
         .sensorValue {
             line-height: 1;
             font-size: 70px;
-            font-weight: 600;
+            font-weight: 500;
             text-align: left;
+            font-family: 'Rubik', sans-serif;
+            font-variant-numeric: tabular-nums;
         }
 
         .temp-details {
@@ -362,10 +369,12 @@
         .temp-limits {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: end;
             justify-content: center;
             font-size: 70px;
-            font-weight: 600;
+            font-weight: 500;
+            font-family: 'Rubik', sans-serif;
+            font-variant-numeric: tabular-nums;
         }
 
         .temp-divider {
@@ -455,11 +464,11 @@
                 {# Output the icon as a span element in your HTML #}
                 <i class="wi {{ icon_class }}"></i>
             </div>
-            <div class="temp">{{ ((states('sensor.tempest_temperature') | float(0))) | round(0) | int }}
+            <div class="temp">{{ ((states('sensor.crawlspace_circpump_temp_outside_temperature') | float(0))) | round(0) | int }}
                 <div class="temp-extra">
                     <div class="degree">°F</div>
                     <div class="decimal">
-                        .{{ "{:.1f}".format(states('sensor.tempest_temperature') | float(0))[-1] }}</div>
+                        .{{ "{:.1f}".format(states('sensor.crawlspace_circpump_temp_outside_temperature') | float(0))[-1] }}</div>
                 </div>
             </div>
             <div class="temp-limits">
@@ -517,7 +526,7 @@
                     {% endif %}
 
                     <i class="wi {{ icon_class }}"></i>
-                    <div style="font-size: 40px; margin-top: 5px;"> {{ day.temperature }}°<br>{{ day.templow }}°</div>
+                    <div class="forecastTemp" style="font-size: 40px; margin-top: 5px;"> {{ day.temperature }}°<br>{{ day.templow }}°</div>
                 </div>
             </div> {% endfor %}
     </div>
