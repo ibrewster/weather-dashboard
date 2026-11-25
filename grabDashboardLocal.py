@@ -137,4 +137,4 @@ if __name__ == "__main__":
     #subprocess.run(["ssh", "kindle", "eips -c"])
     subprocess.run(["ssh", "kindle", f"eips -g {KINDLE_IMG_PATH}"])
 
-print("Dashboard updated and pushed to Kindle.")
+    print("Dashboard updated and pushed to Kindle.")
